@@ -8,6 +8,8 @@ cima = 0
 baixo = 1
 esquerda = 2
 direita = 3
+incrementoAdjacente = 1
+incrementoDestino = 2
 
 
 {-
@@ -97,45 +99,65 @@ isJogadaValida linha coluna direcao matriz =
 
 validaLimiteTabuleiro :: Int -> Int -> Bool
 validaLimiteTabuleiro linha coluna
-    | (linha < 0) || (linha > 6) = False -- nao esta no intervalo horizontal do tabuleiro
-    | (coluna < 0) || (coluna > 6) = False -- nao esta no intervalo vertical do tabuleiro
+    | (linha < 1) || (linha > 7) = False -- nao esta no intervalo horizontal do tabuleiro
+    | (coluna < 1) || (coluna > 7) = False -- nao esta no intervalo vertical do tabuleiro
     | otherwise = True
 
 {-
 - Valida se o movimento esta nos limites da matriz
 -}
 validaMovimento :: Int -> Int -> Int -> Bool
-validaMovimento linha coluna 0 = linha >= 2 --cima
-validaMovimento linha coluna 1 = linha <= 4 --baixo
-validaMovimento linha coluna 3 = coluna >= 2 --esquerda
-validaMovimento linha coluna 4 = coluna <= 4 --direita
+validaMovimento linha coluna 0 = linha >= 3 --cima
+validaMovimento linha coluna 1 = linha <= 5 --baixo
+validaMovimento linha coluna 2 = coluna >= 3 --esquerda
+validaMovimento linha coluna 3 = coluna <= 5 --direita
 validaMovimento linha coluna _ = False
 
 {-
 - Valida se existe peca na casa de origem
 -}
 validaOrigem :: Int -> Int -> Matrix Char -> Bool
-validaOrigem linha coluna matriz = ((getElem linha coluna matriz) /= '1')
+validaOrigem linha coluna matriz = ((getElem linha coluna matriz) == '1')
 
 {-
 - Valida se existe peca na casa de origem
 -}
 validaAdjacente :: Int -> Int -> Int -> Matrix Char -> Bool
-validaAdjacente linha coluna 0 matriz = ((getElem (linha - 1) coluna matriz) /= '1') --cima
-validaAdjacente linha coluna 1 matriz = ((getElem (linha + 1) coluna matriz) /= '1') --baixo
-validaAdjacente linha coluna 3 matriz = ((getElem linha (coluna - 1) matriz) /= '1') --esquerda
-validaAdjacente linha coluna 4 matriz = ((getElem linha (coluna + 1) matriz) /= '1') --direita
+validaAdjacente linha coluna 0 matriz = ((getElem (linha - 1) coluna matriz) == '1') --cima
+validaAdjacente linha coluna 1 matriz = ((getElem (linha + 1) coluna matriz) == '1') --baixo
+validaAdjacente linha coluna 2 matriz = ((getElem linha (coluna - 1) matriz) == '1') --esquerda
+validaAdjacente linha coluna 3 matriz = ((getElem linha (coluna + 1) matriz) == '1') --direita
 validaAdjacente linha coluna _ matriz = False
 
 {-
 - Valida se existe peca na casa de origem
 -}
 validaDestino :: Int -> Int -> Int -> Matrix Char -> Bool
-validaDestino linha coluna 0 matriz = ((getElem (linha - 2) coluna matriz) /= '0') --cima
-validaDestino linha coluna 1 matriz = ((getElem (linha + 2) coluna matriz) /= '0') --baixo
-validaDestino linha coluna 3 matriz = ((getElem linha (coluna - 2) matriz) /= '0') --esquerda
-validaDestino linha coluna 4 matriz = ((getElem linha (coluna + 2) matriz) /= '0') --direita
+validaDestino linha coluna 0 matriz = ((getElem (linha - 2) coluna matriz) == '0') --cima
+validaDestino linha coluna 1 matriz = ((getElem (linha + 2) coluna matriz) == '0') --baixo
+validaDestino linha coluna 2 matriz = ((getElem linha (coluna - 2) matriz) == '0') --esquerda
+validaDestino linha coluna 3 matriz = ((getElem linha (coluna + 2) matriz) == '0') --direita
 validaDestino linha coluna _ matriz = False
+
+
+realizaJogada :: Int -> Int -> Int -> Matrix Char -> Matrix Char
+realizaJogada linha coluna direcao matriz =
+    setElem '0' (definePosicaoAdjacente linha coluna direcao) (setElem '1' (definePosicaoDestino linha coluna direcao) (setElem '0' (definePosicaoOrigem linha coluna) matriz))
+
+definePosicaoOrigem :: Int -> Int -> (Int, Int)
+definePosicaoOrigem linha coluna = (linha, coluna)
+
+definePosicaoAdjacente :: Int -> Int -> Int -> (Int, Int)
+definePosicaoAdjacente linha coluna direcao = definePosicao linha coluna direcao incrementoAdjacente
+
+definePosicaoDestino :: Int -> Int -> Int -> (Int, Int)
+definePosicaoDestino linha coluna direcao = definePosicao linha coluna direcao incrementoDestino
+
+definePosicao :: Int -> Int -> Int -> Int -> (Int, Int)
+definePosicao linha coluna 0 incremento = (linha-incremento, coluna) 
+definePosicao linha coluna 1 incremento = (linha+incremento, coluna) 
+definePosicao linha coluna 2 incremento = (linha, coluna-incremento) 
+definePosicao linha coluna 3 incremento = (linha, coluna+incremento) 
 
 
 main = do
@@ -144,3 +166,14 @@ main = do
     tabuleiro <- leOpcaoTabuleiro
     exibirTabuleiro tabuleiro
     
+    print (isJogadaValida 2 4 baixo tabuleiro)
+    exibirTabuleiro (realizaJogada 2 4 baixo tabuleiro)
+    
+    print (isJogadaValida 6 4 cima tabuleiro)
+    exibirTabuleiro (realizaJogada 6 4 cima tabuleiro)
+    
+    print (isJogadaValida 4 2 direita tabuleiro)
+    exibirTabuleiro (realizaJogada 4 2 direita tabuleiro)
+    
+    print (isJogadaValida 4 6 esquerda tabuleiro)
+    exibirTabuleiro (realizaJogada 4 6 esquerda tabuleiro)
