@@ -54,21 +54,28 @@ validaDestino linha coluna 2 matriz = ((getElem linha (coluna - 2) matriz) == '0
 validaDestino linha coluna 3 matriz = ((getElem linha (coluna + 2) matriz) == '0') --direita
 validaDestino linha coluna _ matriz = False
 
-
+{-
+- Dado um tabuleiro representado como Matrix, 
+- verifica se ainda existe alguma jogada válida a ser realizada
+-}
 existeJogada :: Matrix Char -> Bool
 existeJogada tabuleiro =
     let tabuleiroRotacionado = rotacionaTabuleiroDireita tabuleiro in
     checaJogadaLinhas (toLists tabuleiro) ||
     checaJogadaLinhas (toLists tabuleiroRotacionado)
 
+{-
+- Dada a representação do tabuleiro como uma lista de listas, 
+- verifica se existe jogada válida linha a linha
+-}
 checaJogadaLinhas :: [[Char]] -> Bool
 checaJogadaLinhas [] = False
 checaJogadaLinhas (xs:xss) = (checaJogadaLinha xs) || (checaJogadaLinhas xss) 
 
 
 {-
-Verifica se há alguma jogada válida na lista passada, 
-que representa uma linha do tabuleiro
+- Verifica se há alguma jogada válida na lista passada, 
+- que representa uma linha do tabuleiro
 -}
 checaJogadaLinha :: [Char] -> Bool
 checaJogadaLinha linha = 
