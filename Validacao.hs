@@ -1,7 +1,8 @@
-module Validacao(isJogadaValida) where
+module Validacao(isJogadaValida, existeJogada, checaVitoria) where
 
 import Constantes
 import Data.Matrix
+import qualified Data.List as List
 
 isJogadaValida :: Int -> Int -> Int -> Matrix Char -> Bool
 isJogadaValida linha coluna direcao matriz = 
@@ -52,3 +53,39 @@ validaDestino linha coluna 1 matriz = ((getElem (linha + 2) coluna matriz) == '0
 validaDestino linha coluna 2 matriz = ((getElem linha (coluna - 2) matriz) == '0') --esquerda
 validaDestino linha coluna 3 matriz = ((getElem linha (coluna + 2) matriz) == '0') --direita
 validaDestino linha coluna _ matriz = False
+
+
+existeJogada :: Matrix Char -> Bool
+existeJogada tabuleiro =
+    let tabuleiroRotacionado = rotacionaTabuleiroDireita tabuleiro in
+    checaJogadaLinhas (toLists tabuleiro) ||
+    checaJogadaLinhas (toLists tabuleiroRotacionado)
+
+checaJogadaLinhas :: [[Char]] -> Bool
+checaJogadaLinhas [] = False
+checaJogadaLinhas (xs:xss) = (checaJogadaLinha xs) || (checaJogadaLinhas xss) 
+
+
+{-
+Verifica se há alguma jogada válida na lista passada, 
+que representa uma linha do tabuleiro
+-}
+checaJogadaLinha :: [Char] -> Bool
+checaJogadaLinha linha = 
+    (List.isInfixOf ['1','1','0'] linha) || (List.isInfixOf ['0','1','1'] linha)
+
+{-
+Rotaciona o tabuleiro para a direita, ou seja:
+a b c       g d a
+d e f   =>  h e b
+g h i       i f c
+-}
+rotacionaTabuleiroDireita :: Matrix Char -> Matrix Char
+rotacionaTabuleiroDireita tabuleiro = 
+    transpose (fromLists (List.reverse (toLists tabuleiro)))
+
+{-Dado um tabuleiro sem jogadas possíveis, verifica se é um estado de vitória-}
+checaVitoria :: Matrix Char -> Bool
+checaVitoria tabuleiro = 
+    let listaTabuleiro = toList tabuleiro in
+    (length [a | a <- listaTabuleiro, a == '1']) == 1

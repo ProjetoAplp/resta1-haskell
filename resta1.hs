@@ -38,15 +38,4 @@ main = do
     putStrLn " "
     tabuleiro <- selecionaTabuleiro
     exibirTabuleiro tabuleiro
-
-    print (isJogadaValida 2 4 baixo tabuleiro)
-    exibirTabuleiro (realizaJogada 2 4 baixo tabuleiro)
-    
-    print (isJogadaValida 6 4 cima tabuleiro)
-    exibirTabuleiro (realizaJogada 6 4 cima tabuleiro)
-    
-    print (isJogadaValida 4 2 direita tabuleiro)
-    exibirTabuleiro (realizaJogada 4 2 direita tabuleiro)
-    
-    print (isJogadaValida 4 6 esquerda tabuleiro)
-    exibirTabuleiro (realizaJogada 4 6 esquerda tabuleiro)
+    print $ checaVitoria tabuleiro
