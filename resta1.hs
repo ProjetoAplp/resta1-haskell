@@ -86,47 +86,44 @@ selecionaJogada linha coluna direcao tabuleiro
 - a ultima ação do loop é verificar a vitória do jogador.
 - TODO: Ao inserir Strings em entradas que esperam receber Int (linha e direção) é disparado um erro que finaliza a aplicação.
 -}
-gameLoop jogadaAutomatica tabuleiro
-    | (jogadaAutomatica && (existeJogada tabuleiro)) =
+gameLoop tabuleiro
+    | (existeJogada tabuleiro) =
         do
             exibirTabuleiro tabuleiro
             jogadaAutomatica <- isJogadaAutomatica
-            putStrLn (show (selecionaJogada 0 0 0 tabuleiro))
-            gameLoop jogadaAutomatica $ (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)            
-
-    | (not(jogadaAutomatica) && (existeJogada tabuleiro)) =
-        do
-            exibirTabuleiro tabuleiro
-            putStrLn "Selecione a linha(1-7): "
-            linhaInput <- getLine
-            putStrLn "Selecione a coluna(A-G): "
-            colunaInput <- getLine
-            putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
-            direcaoInput <- getLine
             
-            let linha = read linhaInput
-                coluna = mapeiaLetraColuna (map toUpper colunaInput)
-                direcao = read direcaoInput in 
+            if (jogadaAutomatica) then do
+                gameLoop (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)            
             
-                if (not (validaEntradaJogada linha coluna direcao)) 
-                    then do
-                        print "Entrada Invalida"
-                        jogadaAutomatica <- isJogadaAutomatica
-                        gameLoop jogadaAutomatica tabuleiro
+            else
+                do
+                    putStrLn "Selecione a linha(1-7): "
+                    linhaInput <- getLine
+                    putStrLn "Selecione a coluna(A-G): "
+                    colunaInput <- getLine
+                    putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
+                    direcaoInput <- getLine
+                    
+                    let linha = read linhaInput
+                        coluna = mapeiaLetraColuna (map toUpper colunaInput)
+                        direcao = read direcaoInput in 
+                    
+                        if (not (validaEntradaJogada linha coluna direcao)) 
+                            then do
+                                print "Entrada Invalida"
+                                gameLoop tabuleiro
 
-                else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
-                    then do
-                        print linha
-                        print coluna
-                        print direcao
-                        print "Jogada Invalida"
-                        jogadaAutomatica <- isJogadaAutomatica
-                        gameLoop jogadaAutomatica tabuleiro
+                        else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
+                            then do
+                                print linha
+                                print coluna
+                                print direcao
+                                print "Jogada Invalida"
+                                gameLoop tabuleiro
 
-                else
-                    do 
-                        jogadaAutomatica <- isJogadaAutomatica
-                        gameLoop jogadaAutomatica $ realizaJogada linha coluna direcao tabuleiro
+                        else
+                            do 
+                                gameLoop $ realizaJogada linha coluna direcao tabuleiro
 
     | otherwise = 
         do
@@ -143,5 +140,4 @@ main = do
     exibirRegras
     putStrLn " "
     tabuleiro <- selecionaTabuleiro
-    jogadaAutomatica <- isJogadaAutomatica
-    gameLoop jogadaAutomatica tabuleiro
+    gameLoop tabuleiro
