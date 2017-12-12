@@ -67,11 +67,11 @@ gameLoop tabuleiro
     | (existeJogada tabuleiro) =
         do
             exibirTabuleiro tabuleiro
-            putStr "Selecione a linha(1-7): "
+            putStrLn "Selecione a linha(1-7): "
             linhaInput <- getLine
-            putStr "Selecione a coluna(A-G): "
+            putStrLn "Selecione a coluna(A-G): "
             colunaInput <- getLine
-            putStr "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
+            putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
             direcaoInput <- getLine
             
             let linha = read linhaInput
