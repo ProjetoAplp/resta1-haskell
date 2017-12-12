@@ -68,11 +68,16 @@ isJogadaAutomatica = do
     if (opcao == "s") then return True
     else if (opcao == "n") then return False
     else isJogadaAutomatica
-
+{-
+- Valida as entradas da jogada.
+-}
 validaJogada :: Int -> Int -> Int -> Matrix Char -> Bool
 validaJogada linha coluna direcao tabuleiro = ((validaEntradaJogada linha coluna direcao) && 
                                      (isJogadaValida linha coluna direcao tabuleiro))
 
+{-
+- Seleciona uma jogada automática percorrendo todo o tabuleiro.
+-}
 selecionaJogada :: Int -> Int -> Int -> Matrix Char -> [Int]
 selecionaJogada linha coluna direcao tabuleiro
     | (validaJogada linha coluna direcao tabuleiro) = [linha, coluna, direcao]

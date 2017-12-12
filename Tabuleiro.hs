@@ -38,11 +38,19 @@ selecionaTabuleiro = do
     else if (op == "1") then  return (tabuleiroEuropeu)
     else selecionaTabuleiro
 
+concatenar :: Int -> Int -> Matrix Char -> String
+concatenar linha coluna tabuleiro 
+    | ((linha == 1) && (coluna == 1)) = [(getElem 1 1 tabuleiro)] ++ " " ++ (concatenar 1 2 tabuleiro)
+    | ((linha == 8) && (coluna == 8)) = [(getElem 8 8 tabuleiro)]
+    | (coluna == 8) = [(getElem linha coluna tabuleiro)] ++ "\n" ++ (concatenar (linha + 1) 1 tabuleiro)
+    | otherwise = [(getElem linha coluna tabuleiro)] ++ " " ++ (concatenar linha (coluna + 1) tabuleiro)
+
+
 {-
 -- Exibe o tabuleiro para o usuário
 -}
 exibirTabuleiro :: Matrix Char -> IO ()
-exibirTabuleiro tabuleiro = print ( linha <-> ((coluna) <|> (tabuleiro)) )
+exibirTabuleiro tabuleiro = putStrLn (concatenar 1 1 ( linha <-> ((coluna) <|> (tabuleiro))))
     where
         linha = fromLists [[' ', 'A','B','C','D','E','F', 'G']]
         coluna = fromLists [['1'],['2'],['3'],['4'],['5'],['6'],['7']]
