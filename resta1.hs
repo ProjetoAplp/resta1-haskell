@@ -56,15 +56,45 @@ validaEntradaJogada :: Int -> Int -> Int -> Bool
 validaEntradaJogada linha coluna direcao = 
     (linha >= 1) && (linha <= 7) &&
     (coluna >= 1) && (coluna <= 7) &&
-    (linha >= 0) && (linha <= 3)
+    (direcao >= 0) && (direcao <= 3)
+
+{-
+-Confere ao jogador a escolha de uma jogada automática
+-}
+isJogadaAutomatica :: IO(Bool)
+isJogadaAutomatica = do
+    putStrLn "Deseja realizar uma jogada automatica(s/n)?"
+    opcao <- getLine
+    if (opcao == "s") then return True
+    else if (opcao == "n") then return False
+    else isJogadaAutomatica
+
+validaJogada :: Int -> Int -> Int -> Matrix Char -> Bool
+validaJogada linha coluna direcao tabuleiro = ((validaEntradaJogada linha coluna direcao) && 
+                                     (isJogadaValida linha coluna direcao tabuleiro))
+
+selecionaJogada :: Int -> Int -> Int -> Matrix Char -> [Int]
+selecionaJogada linha coluna direcao tabuleiro
+    | (validaJogada linha coluna direcao tabuleiro) = [linha, coluna, direcao]
+    | ((linha == 7) && (coluna == 7) && (direcao == 3)) = [0, 0, 1]
+    | ((coluna == 7) && (direcao == 3)) = selecionaJogada (linha + 1) 0 0 tabuleiro
+    | (direcao == 3) = selecionaJogada linha (coluna + 1) 0 tabuleiro
+    | otherwise = selecionaJogada linha coluna (direcao + 1) tabuleiro
 
 {-
 - Loop principal do jogo, que é finalizado quando não existem mais jogadas a serem realizadas,
 - a ultima ação do loop é verificar a vitória do jogador.
 - TODO: Ao inserir Strings em entradas que esperam receber Int (linha e direção) é disparado um erro que finaliza a aplicação.
 -}
-gameLoop tabuleiro 
-    | (existeJogada tabuleiro) =
+gameLoop jogadaAutomatica tabuleiro
+    | (jogadaAutomatica && (existeJogada tabuleiro)) =
+        do
+            exibirTabuleiro tabuleiro
+            jogadaAutomatica <- isJogadaAutomatica
+            putStrLn (show (selecionaJogada 0 0 0 tabuleiro))
+            gameLoop jogadaAutomatica $ (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)            
+
+    | (not(jogadaAutomatica) && (existeJogada tabuleiro)) =
         do
             exibirTabuleiro tabuleiro
             putStrLn "Selecione a linha(1-7): "
@@ -81,16 +111,23 @@ gameLoop tabuleiro
                 if (not (validaEntradaJogada linha coluna direcao)) 
                     then do
                         print "Entrada Invalida"
-                        gameLoop tabuleiro
+                        jogadaAutomatica <- isJogadaAutomatica
+                        gameLoop jogadaAutomatica tabuleiro
+
                 else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
                     then do
                         print linha
                         print coluna
                         print direcao
                         print "Jogada Invalida"
-                        gameLoop tabuleiro
+                        jogadaAutomatica <- isJogadaAutomatica
+                        gameLoop jogadaAutomatica tabuleiro
+
                 else
-                    gameLoop $ realizaJogada linha coluna direcao tabuleiro
+                    do 
+                        jogadaAutomatica <- isJogadaAutomatica
+                        gameLoop jogadaAutomatica $ realizaJogada linha coluna direcao tabuleiro
+
     | otherwise = 
         do
             if (checaVitoria tabuleiro) then
@@ -101,8 +138,10 @@ gameLoop tabuleiro
 {-
 - Função main da aplicação, que inicializa o jogo e dispara o gameLoop
 -}
+main :: IO()
 main = do
     exibirRegras
     putStrLn " "
     tabuleiro <- selecionaTabuleiro
-    gameLoop tabuleiro
+    jogadaAutomatica <- isJogadaAutomatica
+    gameLoop jogadaAutomatica tabuleiro
