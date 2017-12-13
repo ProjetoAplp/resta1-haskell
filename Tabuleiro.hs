@@ -37,7 +37,9 @@ selecionaTabuleiro = do
     if (op == "0") then return (tabuleiroIngles)
     else if (op == "1") then  return (tabuleiroEuropeu)
     else selecionaTabuleiro
-
+{-
+- Converte a matriz em uma string para ser impressa na saída.
+-}
 concatenar :: Int -> Int -> Matrix Char -> String
 concatenar linha coluna tabuleiro 
     | ((linha == 1) && (coluna == 1)) = [(getElem 1 1 tabuleiro)] ++ " " ++ (concatenar 1 2 tabuleiro)

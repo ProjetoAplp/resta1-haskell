@@ -76,17 +76,6 @@ validaJogada linha coluna direcao tabuleiro = ((validaEntradaJogada linha coluna
                                      (isJogadaValida linha coluna direcao tabuleiro))
 
 {-
-- Seleciona uma jogada automática percorrendo todo o tabuleiro.
--}
-selecionaJogada :: Int -> Int -> Int -> Matrix Char -> [Int]
-selecionaJogada linha coluna direcao tabuleiro
-    | (validaJogada linha coluna direcao tabuleiro) = [linha, coluna, direcao]
-    | ((linha == 7) && (coluna == 7) && (direcao == 3)) = [0, 0, 1]
-    | ((coluna == 7) && (direcao == 3)) = selecionaJogada (linha + 1) 0 0 tabuleiro
-    | (direcao == 3) = selecionaJogada linha (coluna + 1) 0 tabuleiro
-    | otherwise = selecionaJogada linha coluna (direcao + 1) tabuleiro
-
-{-
 - Loop principal do jogo, que é finalizado quando não existem mais jogadas a serem realizadas,
 - a ultima ação do loop é verificar a vitória do jogador.
 - TODO: Ao inserir Strings em entradas que esperam receber Int (linha e direção) é disparado um erro que finaliza a aplicação.
@@ -120,14 +109,12 @@ gameLoop tabuleiro
 
                         else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
                             then do
-                                print linha
-                                print coluna
-                                print direcao
                                 print "Jogada Invalida"
                                 gameLoop tabuleiro
 
                         else
                             do 
+                                exibirTabuleiro tabuleiro
                                 gameLoop $ realizaJogada linha coluna direcao tabuleiro
 
     | otherwise = 
