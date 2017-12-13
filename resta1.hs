@@ -56,14 +56,28 @@ validaEntradaJogada :: Int -> Int -> Int -> Bool
 validaEntradaJogada linha coluna direcao = 
     (linha >= 1) && (linha <= 7) &&
     (coluna >= 1) && (coluna <= 7) &&
-    (linha >= 0) && (linha <= 3)
+    (linha >= 0) && (coluna >= 0)
+
+{-
+- Realiza os passos para a vitória do jogo.
+-}
+vitoriaAutomatica :: [[Int]] -> Matrix Char -> IO()
+vitoriaAutomatica [] tabuleiro = do
+    exibirTabuleiro tabuleiro
+    print "Parabens! Você venceu!"
+vitoriaAutomatica (s:ss) tabuleiro = do
+    let linha = s !! 0
+    let coluna = s !! 1
+    let direcao = s !! 2
+    exibirTabuleiro tabuleiro
+    vitoriaAutomatica ss $ realizaJogada linha coluna direcao tabuleiro
 
 {-
 - Loop principal do jogo, que é finalizado quando não existem mais jogadas a serem realizadas,
 - a ultima ação do loop é verificar a vitória do jogador.
 - TODO: Ao inserir Strings em entradas que esperam receber Int (linha e direção) é disparado um erro que finaliza a aplicação.
 -}
-gameLoop tabuleiro 
+gameLoop tabuleiro
     | (existeJogada tabuleiro) =
         do
             exibirTabuleiro tabuleiro
@@ -73,25 +87,22 @@ gameLoop tabuleiro
             colunaInput <- getLine
             putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
             direcaoInput <- getLine
-            
+
             let linha = read linhaInput
                 coluna = mapeiaLetraColuna (map toUpper colunaInput)
-                direcao = read direcaoInput in 
-            
-                if (not (validaEntradaJogada linha coluna direcao)) 
+                direcao = read direcaoInput in
+
+                if (not (validaEntradaJogada linha coluna direcao))
                     then do
                         print "Entrada Invalida"
                         gameLoop tabuleiro
-                else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
+                else if(not (isJogadaValida linha coluna direcao tabuleiro))
                     then do
-                        print linha
-                        print coluna
-                        print direcao
                         print "Jogada Invalida"
                         gameLoop tabuleiro
                 else
                     gameLoop $ realizaJogada linha coluna direcao tabuleiro
-    | otherwise = 
+    | otherwise =
         do
             if (checaVitoria tabuleiro) then
                 print "Parabens! Você venceu!"
@@ -104,5 +115,10 @@ gameLoop tabuleiro
 main = do
     exibirRegras
     putStrLn " "
-    tabuleiro <- selecionaTabuleiro
-    gameLoop tabuleiro
+    putStrLn "Digite: 0 - Vencer Automaticamente, 1 - Jogar"
+    escolha <- getLine
+    if ( read escolha == 0) then
+        vitoriaAutomatica sequenciaDeVitoria tabuleiroIngles
+    else do
+        tabuleiro <- selecionaTabuleiro
+        gameLoop tabuleiro
