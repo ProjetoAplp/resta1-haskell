@@ -49,14 +49,17 @@ mapeiaLetraColuna "F" = 6
 mapeiaLetraColuna "G" = 7
 mapeiaLetraColuna  _  = 8
 
+
 {-
-- Valida se uma entrada de jogada está nos intervalos corretos do tabuleiro.
+-Confere ao jogador a escolha de uma jogada automática
 -}
-validaEntradaJogada :: Int -> Int -> Int -> Bool
-validaEntradaJogada linha coluna direcao = 
-    (linha >= 1) && (linha <= 7) &&
-    (coluna >= 1) && (coluna <= 7) &&
-    (linha >= 0) && (linha <= 3)
+isJogadaAutomatica :: IO(Bool)
+isJogadaAutomatica = do
+    putStrLn "Deseja realizar uma jogada automatica(s/n)?"
+    opcao <- getLine
+    if (opcao == "s") then return True
+    else if (opcao == "n") then return False
+    else isJogadaAutomatica
 
 {-
 - Realiza os passos para a vitória do jogo.
@@ -81,28 +84,41 @@ gameLoop tabuleiro
     | (existeJogada tabuleiro) =
         do
             exibirTabuleiro tabuleiro
-            putStrLn "Selecione a linha(1-7): "
-            linhaInput <- getLine
-            putStrLn "Selecione a coluna(A-G): "
-            colunaInput <- getLine
-            putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
-            direcaoInput <- getLine
 
-            let linha = read linhaInput
-                coluna = mapeiaLetraColuna (map toUpper colunaInput)
-                direcao = read direcaoInput in
+            jogadaAutomatica <- isJogadaAutomatica
+            
+            if (jogadaAutomatica) then do
+                gameLoop (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)            
+            
+            else
+                do
+                    putStrLn "Selecione a linha(1-7): "
+                    linhaInput <- getLine
+                    putStrLn "Selecione a coluna(A-G): "
+                    colunaInput <- getLine
+                    putStrLn "Selecione a direção(0 - Cima; 1 - Baixo; 2 - Esquerda; 3 - Direita): "
+                    direcaoInput <- getLine
+                    
+                    let linha = read linhaInput
+                        coluna = mapeiaLetraColuna (map toUpper colunaInput)
+                        direcao = read direcaoInput in 
+                    
+                        if (not (validaEntradaJogada linha coluna direcao)) 
+                            then do
+                                print "Entrada Invalida"
+                                gameLoop tabuleiro
 
-                if (not (validaEntradaJogada linha coluna direcao))
-                    then do
-                        print "Entrada Invalida"
-                        gameLoop tabuleiro
-                else if(not (isJogadaValida linha coluna direcao tabuleiro))
-                    then do
-                        print "Jogada Invalida"
-                        gameLoop tabuleiro
-                else
-                    gameLoop $ realizaJogada linha coluna direcao tabuleiro
-    | otherwise =
+                        else if(not (isJogadaValida linha coluna direcao tabuleiro)) 
+                            then do
+                                print "Jogada Invalida"
+                                gameLoop tabuleiro
+
+                        else
+                            do 
+                                exibirTabuleiro tabuleiro
+                                gameLoop $ realizaJogada linha coluna direcao tabuleiro
+
+    | otherwise = 
         do
             if (checaVitoria tabuleiro) then
                 print "Parabens! Você venceu!"
@@ -121,6 +137,7 @@ selecionaModo = do
 {-
 - Função main da aplicação, que inicializa o jogo e dispara o gameLoop
 -}
+main :: IO()
 main = do
     exibirRegras
     putStrLn " "

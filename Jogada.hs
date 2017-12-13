@@ -1,4 +1,4 @@
-module Jogada(realizaJogada) where
+module Jogada(realizaJogada, selecionaJogada) where
 import Constantes
 import Validacao
 import Data.Matrix
@@ -22,3 +22,14 @@ definePosicao linha coluna 0 incremento = (linha-incremento, coluna)
 definePosicao linha coluna 1 incremento = (linha+incremento, coluna) 
 definePosicao linha coluna 2 incremento = (linha, coluna-incremento) 
 definePosicao linha coluna 3 incremento = (linha, coluna+incremento) 
+
+{-
+- Seleciona uma jogada automática percorrendo todo o tabuleiro.
+-}
+selecionaJogada :: Int -> Int -> Int -> Matrix Char -> [Int]
+selecionaJogada linha coluna direcao tabuleiro
+    | (validaJogada linha coluna direcao tabuleiro) = [linha, coluna, direcao]
+    | ((linha == 7) && (coluna == 7) && (direcao == 3)) = [0, 0, 1]
+    | ((coluna == 7) && (direcao == 3)) = selecionaJogada (linha + 1) 0 0 tabuleiro
+    | (direcao == 3) = selecionaJogada linha (coluna + 1) 0 tabuleiro
+    | otherwise = selecionaJogada linha coluna (direcao + 1) tabuleiro
