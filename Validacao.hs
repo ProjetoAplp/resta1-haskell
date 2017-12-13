@@ -1,4 +1,4 @@
-module Validacao(isJogadaValida, existeJogada, checaVitoria) where
+module Validacao(isJogadaValida, existeJogada, checaVitoria, validaEntradaJogada, validaJogada) where
 
 import Constantes
 import Data.Matrix
@@ -96,3 +96,19 @@ checaVitoria :: Matrix Char -> Bool
 checaVitoria tabuleiro = 
     let listaTabuleiro = toList tabuleiro in
     (length [a | a <- listaTabuleiro, a == '1']) == 1
+
+{-
+- Valida se uma entrada de jogada está nos intervalos corretos do tabuleiro.
+-}
+validaEntradaJogada :: Int -> Int -> Int -> Bool
+validaEntradaJogada linha coluna direcao = 
+    (linha >= 1) && (linha <= 7) &&
+    (coluna >= 1) && (coluna <= 7) &&
+    (direcao >= 0) && (direcao <= 3)
+    
+{-
+- Valida as entradas da jogada.
+-}
+validaJogada :: Int -> Int -> Int -> Matrix Char -> Bool
+validaJogada linha coluna direcao tabuleiro = ((validaEntradaJogada linha coluna direcao) && 
+                                        (isJogadaValida linha coluna direcao tabuleiro))
