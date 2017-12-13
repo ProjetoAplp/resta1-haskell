@@ -49,14 +49,6 @@ mapeiaLetraColuna "F" = 6
 mapeiaLetraColuna "G" = 7
 mapeiaLetraColuna  _  = 8
 
-{-
-- Valida se uma entrada de jogada está nos intervalos corretos do tabuleiro.
--}
-validaEntradaJogada :: Int -> Int -> Int -> Bool
-validaEntradaJogada linha coluna direcao = 
-    (linha >= 1) && (linha <= 7) &&
-    (coluna >= 1) && (coluna <= 7) &&
-    (direcao >= 0) && (direcao <= 3)
 
 {-
 -Confere ao jogador a escolha de uma jogada automática
@@ -68,12 +60,6 @@ isJogadaAutomatica = do
     if (opcao == "s") then return True
     else if (opcao == "n") then return False
     else isJogadaAutomatica
-{-
-- Valida as entradas da jogada.
--}
-validaJogada :: Int -> Int -> Int -> Matrix Char -> Bool
-validaJogada linha coluna direcao tabuleiro = ((validaEntradaJogada linha coluna direcao) && 
-                                     (isJogadaValida linha coluna direcao tabuleiro))
 
 {-
 - Loop principal do jogo, que é finalizado quando não existem mais jogadas a serem realizadas,
