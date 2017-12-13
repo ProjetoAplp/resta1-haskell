@@ -115,7 +115,6 @@ gameLoop tabuleiro
 
                         else
                             do 
-                                exibirTabuleiro tabuleiro
                                 gameLoop $ realizaJogada linha coluna direcao tabuleiro
 
     | otherwise = 
