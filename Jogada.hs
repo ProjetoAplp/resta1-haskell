@@ -1,4 +1,4 @@
-module Jogada(realizaJogada, selecionaJogada) where
+module Jogada(realizaJogada, realizaJogadaAutomatica) where
 import Constantes
 import Validacao
 import Data.Matrix
@@ -7,6 +7,9 @@ import Data.Matrix
 realizaJogada :: Int -> Int -> Int -> Matrix Char -> Matrix Char
 realizaJogada linha coluna direcao matriz =
     setElem '0' (definePosicaoAdjacente linha coluna direcao) (setElem '1' (definePosicaoDestino linha coluna direcao) (setElem '0' (definePosicaoOrigem linha coluna) matriz))
+
+realizaJogadaAutomatica :: Matrix Char -> Matrix Char
+realizaJogadaAutomatica tabuleiro = (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)
 
 definePosicaoOrigem :: Int -> Int -> (Int, Int)
 definePosicaoOrigem linha coluna = (linha, coluna)

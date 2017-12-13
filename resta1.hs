@@ -88,7 +88,7 @@ gameLoop tabuleiro
             jogadaAutomatica <- isJogadaAutomatica
             
             if (jogadaAutomatica) then do
-                gameLoop (realizaJogada ((selecionaJogada 0 0 0 tabuleiro) !! 0) ((selecionaJogada 0 0 0 tabuleiro) !! 1) ((selecionaJogada 0 0 0 tabuleiro) !! 2) tabuleiro)            
+                gameLoop (realizaJogadaAutomatica tabuleiro)            
             
             else
                 do
