@@ -56,7 +56,7 @@ validaEntradaJogada :: Int -> Int -> Int -> Bool
 validaEntradaJogada linha coluna direcao = 
     (linha >= 1) && (linha <= 7) &&
     (coluna >= 1) && (coluna <= 7) &&
-    (linha >= 0) && (coluna >= 0)
+    (linha >= 0) && (linha <= 3)
 
 {-
 - Realiza os passos para a vitória do jogo.
@@ -108,6 +108,15 @@ gameLoop tabuleiro
                 print "Parabens! Você venceu!"
             else
                 print "Voce perdeu, tente novamente!"
+{-
+- Função que retorna True caso o modo vitoria automática seja delecionado
+-}
+selecionaModo :: IO (Bool)
+selecionaModo = do
+    putStrLn "Digite: 0 - Vencer Automaticamente, 1 - Jogar"
+    escolha <- getLine
+    return ((read escolha) == 0)
+
 
 {-
 - Função main da aplicação, que inicializa o jogo e dispara o gameLoop
@@ -115,9 +124,8 @@ gameLoop tabuleiro
 main = do
     exibirRegras
     putStrLn " "
-    putStrLn "Digite: 0 - Vencer Automaticamente, 1 - Jogar"
-    escolha <- getLine
-    if ( read escolha == 0) then
+    isVitoriaAutomatica <- selecionaModo
+    if ( isVitoriaAutomatica ) then
         vitoriaAutomatica sequenciaDeVitoria tabuleiroIngles
     else do
         tabuleiro <- selecionaTabuleiro
