@@ -1,4 +1,4 @@
-module Tabuleiro(exibirTabuleiro, selecionaTabuleiro) where
+module Tabuleiro(exibirTabuleiro, selecionaTabuleiro, tabuleiroIngles, tabuleiroEuropeu) where
 import Data.Matrix
 
 {-
